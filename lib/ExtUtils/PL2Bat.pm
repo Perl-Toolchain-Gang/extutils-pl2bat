@@ -3,6 +3,8 @@ package ExtUtils::PL2Bat;
 use strict;
 use warnings;
 
+use 5.006;
+
 use base 'Exporter';
 our @EXPORT = qw/pl2bat/;
 
