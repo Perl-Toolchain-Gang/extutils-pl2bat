@@ -98,3 +98,5 @@ EOT
 }
 
 1;
+
+# ABSTRACT: Batch file creation to run perl scripts on Windows
