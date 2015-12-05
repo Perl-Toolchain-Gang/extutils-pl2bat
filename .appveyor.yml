@@ -17,6 +17,8 @@ install:
   - 'call .appveyor.cmd perl_setup'
   - '%perl% -V'
 
+build: off
+
 test_script:
   - 'prove -l t'
 
