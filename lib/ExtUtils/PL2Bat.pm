@@ -100,3 +100,57 @@ EOT
 1;
 
 # ABSTRACT: Batch file creation to run perl scripts on Windows
+
+=head1 OVERVIEW
+
+This module converts a perl script into a batch file that can be executed on Windows/DOS-like operating systems.  This is intended to allow you to use a Perl script like regular programs and batch files where you just enter the name of the script [probably minus the extension] plus any command-line arguments and the script is found in your B<PATH> and run.
+
+=func pl2bat(%opts)
+
+This function takes a perl script and write a batch file that contains the script. This is sometimes necessary
+
+=over 8
+
+=item * C<in>
+
+The name of the script that is to be batchified. This argument is mandatory.
+
+=item * C<out>
+
+The name of the output batch file. If not given, it will be generated using C<in> and C<stripsuffix>.
+
+=item * C<ntargs>
+
+Arguments to invoke perl with in generated batch file when run from
+Windows NT.  Defaults to S<'-x -S %0 %*'>.
+
+=item * C<otherargs>
+
+Arguments to invoke perl with in generated batch file except when
+run from Windows NT (ie. when run from DOS, Windows 3.1, or Windows 95).
+Defaults to S<'-x -S "%0" %1 %2 %3 %4 %5 %6 %7 %8 %9'>.
+
+=item * C<stripsuffix>
+
+Strip a suffix string from file name before appending a ".bat"
+suffix.  The suffix is not case-sensitive.  It can be a regex or a string and a trailing
+C<$> is always assumed).  Defaults to C<qr/\.plx?/>.
+
+=item * C<usewarnings>
+
+With the C<usewarnings>
+option, C<" -w"> is added after the value of C<$Config{startperl}>.
+If a line matching C</^#!.*perl/> already exists in the script,
+then it is not changed and the B<-w> option is ignored.
+
+=item * C<update>
+
+If the script appears to have already been processed by B<pl2bat>,
+then the script is skipped and not processed unless C<update> was
+specified.  If C<update> is specified, the existing preamble is replaced.
+
+=back
+
+=head1 ACKNOWLEDGEMENTS
+
+This code was taken from Module::Build and then modified; which had taken it from perl's pl2bat script. This module is an attempt at unifying all three implementations.
