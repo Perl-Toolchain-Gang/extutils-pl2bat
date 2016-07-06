@@ -1,10 +1,7 @@
 @echo off
 
 if not defined perl_type set perl_type=system
-if "%perl_type%" == "cygwin" (
-  start /wait c:\cygwin\setup-x86.exe -q -P perl make
-  set "PATH=C:\cygwin\usr\local\bin;C:\cygwin\bin;%PATH%"
-) else if "%perl_type%" == "strawberry" (
+if "%perl_type%" == "strawberry" (
   if not defined perl_version (
     cinst -y StrawberryPerl
   ) else (
