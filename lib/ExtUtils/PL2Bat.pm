@@ -29,6 +29,7 @@ sub pl2bat {
 	my $head = <<"EOT";
 	\@rem = '--*-Perl-*--
 	\@echo off
+	set ErrorLevel=
 	if "%OS%" == "Windows_NT" goto WinNT
 	perl $opts{otherargs}
 	\@set ErrorLevel=%ErrorLevel%
