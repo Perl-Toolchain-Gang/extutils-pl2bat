@@ -47,7 +47,7 @@ EOT
 	my $tail = <<'EOT';
 	__END__
 	:endofperl
-	@set "ErrorLevel=" & @"%COMSPEC%" /d/c @exit %ErrorLevel%
+	@set "ErrorLevel=" & @goto _undefined_label_ 2>NUL || @"%COMSPEC%" /d/c @exit %ErrorLevel%
 EOT
 	$tail =~ s/^\s+//gm;
 
