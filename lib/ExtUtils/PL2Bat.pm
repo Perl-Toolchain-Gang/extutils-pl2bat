@@ -5,11 +5,20 @@ use warnings;
 
 use 5.006;
 
-use base 'Exporter';
-our @EXPORT = qw/pl2bat/;
-
 use Config;
 use Carp qw/croak/;
+
+# In core, we can't use any other modules except those that already live in
+# lib/, so Exporter is not available to us.
+sub import {
+	my ($self, @functions) = @_;
+	@functions = 'pl2bat' if not @functions;
+	my $caller = caller;
+	for my $function (@functions) {
+		no strict 'refs';
+		*{"$caller\::$function"} = \&{$function};
+	}
+}
 
 sub pl2bat {
 	my %opts = @_;
