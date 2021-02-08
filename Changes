@@ -1,6 +1,7 @@
 Revision history for ExtUtils-PL2Bat
 
 {{$NEXT}}
+          - Apply test update from core
 
 0.003     2020-07-16 19:20:11+02:00 Europe/Amsterdam
           Add pl2bat.pl
