@@ -1,6 +1,7 @@
 Revision history for ExtUtils-PL2Bat
 
 {{$NEXT}}
+          - Ensure cmd.exe is used in pl2bat tests
 
 0.004     2021-02-08 22:26:46+01:00 Europe/Amsterdam
           - Apply test update from core
