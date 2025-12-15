@@ -39,11 +39,11 @@ sub pl2bat {
 	\@rem = '--*-Perl-*--
 	\@set "ErrorLevel="
 	\@if "%OS%" == "Windows_NT" \@goto WinNT
-	\@perl $opts{otherargs}
+	\@perl <<<ARGS>>>$opts{otherargs}
 	\@set ErrorLevel=%ErrorLevel%
 	\@goto endofperl
 	:WinNT
-	\@perl $opts{ntargs}
+	\@perl <<<ARGS>>>$opts{ntargs}
 	\@set ErrorLevel=%ErrorLevel%
 	\@if NOT "%COMSPEC%" == "%SystemRoot%\\system32\\cmd.exe" \@goto endofperl
 	\@if %ErrorLevel% == 9009 \@echo You do not have Perl in your PATH.
@@ -81,7 +81,10 @@ EOT
 			}
 			$taildone++;
 		}
-		if ( not $linedone and $line =~ /^#!.*perl/ ) {
+		if ( not $linedone and $line =~ /^#!.*perl\S*(?:\s+(.*?))?\s*$/ ) {
+			if (!defined $opts{args} && $1 ne '') {
+				$opts{args} = $1;
+			}
 			if (exists $opts{update}) {
 				$skiplines = $linenum - 1;
 				$line .= '#line '.(1+$headlines)."\n";
@@ -94,6 +97,10 @@ EOT
 			$line = '';
 		}
 	}
+
+	$opts{args} = '' unless exists $opts{args};
+	$opts{args} =~ s/\s*$/ / if $opts{args} ne '';
+	$head =~ s/<<<ARGS>>>/$opts{args}/g;
 
 	open my $out, '>', $opts{out} or croak "Can't open $opts{out}: $!";
 	print $out $head;
@@ -127,6 +134,12 @@ The name of the script that is to be batchified. This argument is mandatory.
 =item * C<out>
 
 The name of the output batch file. If not given, it will be generated using C<in> and C<stripsuffix>.
+
+=item * C<args>
+
+Arguments to invoke perl with in generated batch file in addition to
+the arguments added by C<ntargs> and C<otherargs>.  Defaults to any
+options found on the S<#!> line in the Perl script.
 
 =item * C<ntargs>
 

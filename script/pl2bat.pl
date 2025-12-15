@@ -8,14 +8,17 @@ $0 =~ s|.*[/\\]||;
 
 my $usage = <<EOT;
 Usage:  $0 [-h]
-   or:  $0 [-w] [-u] [-a argstring] [-s stripsuffix] [files]
-   or:  $0 [-w] [-u] [-n ntargs] [-o otherargs] [-s stripsuffix] [files]
+   or:  $0 [options] [files]
         -n ntargs       arguments to invoke perl with in generated file
                             when run from Windows NT.  Defaults to
                             '-x -S %0 %*'.
         -o otherargs    arguments to invoke perl with in generated file
                             other than when run from Windows NT.  Defaults
                             to '-x -S "%0" %1 %2 %3 %4 %5 %6 %7 %8 %9'.
+	-a argstring	equivalent to "-n argstring -o argstring".
+	-e args         arguments to invoke perl *in addition* to the above.
+                            Defaults to anything found on the script #! line.
+	-E		do not collect arguments from the script line.
         -u              update files that may have already been processed
                             by (some version of) pl2bat.
         -w              include "-w" on the /^#!.*perl/ line (unless
@@ -28,13 +31,14 @@ Usage:  $0 [-h]
 EOT
 
 my %OPT = ();
-warn($usage), exit(0) if !getopts('whun:o:a:s:',\%OPT) or $OPT{'h'};
+warn($usage), exit(0) if !getopts('whuEn:o:a:e:s:',\%OPT) or $OPT{'h'};
 die '-a option has been removed' if $OPT{a};
 
 my %key_for = (
 	n => 'ntargs',
 	o => 'otherargs',
 	a => 'argstring',
+	e => 'args',
 	u => 'update',
 	w => 'usewarnings'
 );
@@ -47,6 +51,9 @@ for my $old_key (keys %key_for) {
 }
 if (exists $OPT{s}) {
 	$args{strip_suffix} = $OPT{'s'} =~ m#^/([^/]*[^/\$]|)\$?/?$# ? qr/$1/ : qr/\Q$OPT{'s'}\E/;
+}
+if (exists $OPT{E}) {
+	$args{args} = '' unless exists $args{args};
 }
 
 for my $file (@ARGV) {
@@ -63,9 +70,9 @@ pl2bat - wrap perl code into a batch file
 
 B<pl2bat> B<-h>
 
-B<pl2bat> [B<-w>] S<[B<-a> I<argstring>]> S<[B<-s> I<stripsuffix>]> [files]
+B<pl2bat> [B<-w>] S<[B<-a> I<argstring>]> S<[B<-e> I<args>]> S<[B<-s> I<stripsuffix>]> [files]
 
-B<pl2bat> [B<-w>] S<[B<-n> I<ntargs>]> S<[B<-o> I<otherargs>]> S<[B<-s> I<stripsuffix>]> [files]
+B<pl2bat> [B<-w>] S<[B<-n> I<ntargs>]> S<[B<-o> I<otherargs>]> S<[B<-e> I<args>]> S<[B<-s> I<stripsuffix>]> [files]
 
 =head1 DESCRIPTION
 
@@ -264,6 +271,16 @@ Defaults to S<'-x -S "%0" %1 %2 %3 %4 %5 %6 %7 %8 %9'>.
 Arguments to invoke perl with in generated batch file.  Specifying
 B<-a> prevents the batch file from checking the C<OS> environment
 variable to determine which operating system it is being run from.
+
+=item B<-e> I<args>
+
+Arguments in addition to the ones specified by the previous options.
+By default, this means any options found on the S<#!> line in the script.
+
+=item B<-E>
+
+Suppresses collecting options from the S<#!> line in the script.
+Equivalent to the B<-e> option with an empty string argument.
 
 =item B<-s> I<stripsuffix>
 
