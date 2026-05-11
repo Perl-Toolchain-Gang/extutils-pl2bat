@@ -43,7 +43,8 @@ sub pl2bat {
 	\@set ErrorLevel=%ErrorLevel%
 	\@goto endofperl
 	:WinNT
-	\@perl $opts{ntargs}
+	\@perl $opts{ntargs} || goto :error
+	:error
 	\@set ErrorLevel=%ErrorLevel%
 	\@if NOT "%COMSPEC%" == "%SystemRoot%\\system32\\cmd.exe" \@goto endofperl
 	\@if %ErrorLevel% == 9009 \@echo You do not have Perl in your PATH.
